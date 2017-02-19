@@ -43,6 +43,7 @@ import okhttp3.internal.cache.InternalCache;
 import okhttp3.internal.connection.RealConnection;
 import okhttp3.internal.connection.RouteDatabase;
 import okhttp3.internal.connection.StreamAllocation;
+import okhttp3.internal.hsts.HstsInterceptor;
 import okhttp3.internal.platform.Platform;
 import okhttp3.internal.tls.CertificateChainCleaner;
 import okhttp3.internal.tls.OkHostnameVerifier;
@@ -212,6 +213,7 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
   final int readTimeout;
   final int writeTimeout;
   final int pingInterval;
+  final Interceptor hstsInterceptor;
 
   public OkHttpClient() {
     this(new Builder());
@@ -258,6 +260,7 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
     this.readTimeout = builder.readTimeout;
     this.writeTimeout = builder.writeTimeout;
     this.pingInterval = builder.pingInterval;
+    this.hstsInterceptor = builder.hstsInterceptor;
   }
 
   private X509TrustManager systemDefaultTrustManager() {
@@ -420,6 +423,10 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
     return new Builder(this);
   }
 
+  public Interceptor hstsInterceptor() {
+    return hstsInterceptor;
+  }
+
   public static final class Builder {
     Dispatcher dispatcher;
     Proxy proxy;
@@ -447,6 +454,7 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
     int readTimeout;
     int writeTimeout;
     int pingInterval;
+    Interceptor hstsInterceptor;
 
     public Builder() {
       dispatcher = new Dispatcher();
@@ -468,6 +476,7 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
       readTimeout = 10_000;
       writeTimeout = 10_000;
       pingInterval = 0;
+      hstsInterceptor = new HstsInterceptor();
     }
 
     Builder(OkHttpClient okHttpClient) {
@@ -497,6 +506,7 @@ public class OkHttpClient implements Cloneable, Call.Factory, WebSocket.Factory 
       this.readTimeout = okHttpClient.readTimeout;
       this.writeTimeout = okHttpClient.writeTimeout;
       this.pingInterval = okHttpClient.pingInterval;
+      this.hstsInterceptor = okHttpClient.hstsInterceptor;
     }
 
     /**

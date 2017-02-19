@@ -22,6 +22,7 @@ import okhttp3.internal.NamedRunnable;
 import okhttp3.internal.cache.CacheInterceptor;
 import okhttp3.internal.connection.ConnectInterceptor;
 import okhttp3.internal.connection.StreamAllocation;
+import okhttp3.internal.hsts.HstsInterceptor;
 import okhttp3.internal.http.BridgeInterceptor;
 import okhttp3.internal.http.CallServerInterceptor;
 import okhttp3.internal.http.RealInterceptorChain;
@@ -165,6 +166,7 @@ final class RealCall implements Call {
     // Build a full stack of interceptors.
     List<Interceptor> interceptors = new ArrayList<>();
     interceptors.addAll(client.interceptors());
+    interceptors.add(client.hstsInterceptor());
     interceptors.add(retryAndFollowUpInterceptor);
     interceptors.add(new BridgeInterceptor(client.cookieJar()));
     interceptors.add(new CacheInterceptor(client.internalCache()));
